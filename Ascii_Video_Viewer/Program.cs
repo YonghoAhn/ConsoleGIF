@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
@@ -13,23 +14,33 @@ namespace Ascii_Video_Viewer
         private static string[] _AsciiChars = { "#", "#", "@", "%", "=", "+", "*", ":", "-", ".", " " };
         private static string _Content;
         private static string Path;
+        private static GifImage a;
         static void Main(string[] args)
         {
 
             Console.CursorSize = 8;
             Path = Console.ReadLine();
-            GifImage a = new GifImage(Path)
+            Console.WindowWidth = Console.LargestWindowWidth;
+            Console.WindowHeight = Console.LargestWindowHeight;
+            try
             {
-                ReverseAtEnd = false
-            };
-            while (true)
-            {
-                GenerateAscii(a.GetNextFrame());
+                a = new GifImage(Path)
+                {
+                    ReverseAtEnd = false
+                };
+                var t = new Timer(TimerTick, null, 0, 60);
             }
-            Console.WriteLine("asdf");
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
             Console.ReadKey();
         }
-
+        private static void TimerTick(Object o)
+        {
+            GenerateAscii(a.GetNextFrame());
+            GC.Collect();
+        }
         private static string ConvertToAscii(Bitmap image)
         {
             Boolean toggle = false;
@@ -72,9 +83,11 @@ namespace Ascii_Video_Viewer
             //Console.Clear();
             Console.SetCursorPosition(0, 0);
             Bitmap image = new Bitmap(i);
-            image = GetReSizedImage(image, 80);
+            i.Dispose();
+            image = GetReSizedImage(image, 180);
             _Content = ConvertToAscii(image);
             Console.Write(_Content);
+            image.Dispose();
         }
 
         private static Bitmap GetReSizedImage(Bitmap inputBitmap, int asciiWidth)
