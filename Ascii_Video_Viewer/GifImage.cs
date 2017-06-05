@@ -10,13 +10,14 @@ namespace Ascii_Video_Viewer
 {
     class GifImage
     {
+        #region Variables
         private Image gifImage;
         private FrameDimension dimension;
         private int frameCount;
         private int currentFrame = -1;
         private bool reverse;
         private int step = 1;
-
+        #endregion
         public GifImage(string path)
         {
             gifImage = Image.FromFile(path);
