@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,16 @@ namespace Ascii_Video_Viewer
         public GifImage(string path)
         {
             gifImage = Image.FromFile(path);
+            //initialize
+            dimension = new FrameDimension(gifImage.FrameDimensionsList[0]);
+            //gets the GUID
+            //total frames in the animation
+            frameCount = gifImage.GetFrameCount(dimension);
+        }
+
+        public GifImage(Stream stream)
+        {
+            gifImage = Image.FromStream(stream);
             //initialize
             dimension = new FrameDimension(gifImage.FrameDimensionsList[0]);
             //gets the GUID
@@ -56,11 +67,14 @@ namespace Ascii_Video_Viewer
                     //...or start over
                 }
             }
+            System.Threading.Thread.Sleep(100);
             return GetFrame(currentFrame);
         }
 
         public Image GetFrame(int index)
         {
+            //Image i = (Image)gifImage.Clone();
+           
             gifImage.SelectActiveFrame(dimension, index);
             //find the frame
             return (Image)gifImage.Clone();
